@@ -38,6 +38,7 @@ func main() {
         for {
                 netData, err := bufio.NewReader(c).ReadString('\n')
                 if err != nil {
+						fmt.Println("Im ddd")
                         fmt.Println(err)
                         return
                 }
@@ -54,7 +55,7 @@ func main() {
 					}else{
 
 						c.Write([]byte("$02\n"))
-						
+
 					}
 
                 }else{
@@ -90,7 +91,6 @@ func startComputer() error{
         <-c
         pin.Clear()
         pin.Close()
-        os.Exit(0)
     }()
     
     pin.Set()
