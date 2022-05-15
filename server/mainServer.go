@@ -6,64 +6,84 @@ import (
         "net"
         "strings"
 		"wolRasp/config"
-    	"os"
-    	"os/signal"
-    	"syscall"
-    	"time"
-    	"github.com/mlgd/gpio"
+		"os"
+		"os/signal"
+		"syscall"
+		"time"
+		"github.com/mlgd/gpio"
+		"strconv"
 )
 
-func main() {
+var count = 0
 
+func handleConnection(c net.Conn) {
+
+        fmt.Print("New Connection")
+
+        for {
+			
+            netData, err := bufio.NewReader(c).ReadString('\n')
+            if err != nil {
+                    fmt.Println(err)
+                    return
+            }
+
+            temp := strings.TrimSpace(string(netData))
+
+			if temp == config.General.Password {
+
+				fmt.Println("Request Accepted")
+				c.Write([]byte("$01\n"))
+
+				if startComputer() == nil{
+
+					c.Write([]byte("$01\n"))
+
+				}else{
+
+					c.Write([]byte("$02\n"))
+
+				}
+
+            }else{
+
+				fmt.Println("Request Not Accepted")
+				c.Write([]byte("$02\n")) 
+
+			}
+        }
+
+        c.Close()
+
+}
+
+func main() {
+        
 		config.Get("serverConfig.json")
 
         PORT := ":" + config.General.Port
 
 		fmt.Println("Start server to *" + PORT)
 
-        l, err := net.Listen("tcp", PORT)
+        l, err := net.Listen("tcp4", PORT)
         if err != nil {
                 fmt.Println(err)
                 return
         }
-
         defer l.Close()
 
-        c, err := l.Accept()
-        if err != nil {
-                fmt.Println(err)
-                return
-        }
-
         for {
-                netData, err := bufio.NewReader(c).ReadString('\n')
+
+                c, err := l.Accept()
                 if err != nil {
-						fmt.Println("Im ddd")
                         fmt.Println(err)
                         return
                 }
 
-                if strings.TrimSpace(string(netData)) == config.General.Password {
+                go handleConnection(c)
 
-					fmt.Println("Request Accepted")
-					c.Write([]byte("$01\n"))
+                count++
 
-					if startComputer() == nil{
-
-						c.Write([]byte("$01\n"))
-
-					}else{
-
-						c.Write([]byte("$02\n"))
-
-					}
-
-                }else{
-
-					fmt.Println("Request Not Accepted")
-					c.Write([]byte("$02\n")) 
-
-				}
         }
 }
 
