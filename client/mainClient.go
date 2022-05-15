@@ -52,4 +52,7 @@ func main() {
             return
 
         }
+
+    c.Close()
+    
 }

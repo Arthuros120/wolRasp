@@ -1,30 +1,41 @@
 package main
 
 import (
-        "bufio"
-        "fmt"
-        "net"
-        "strings"
-		"wolRasp/config"
-		"os"
-		"os/signal"
-		"syscall"
-		"time"
-		"github.com/mlgd/gpio"
+	"bufio"
+	"fmt"
+	"io"
+	"net"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+	"wolRasp/config"
+
+	"github.com/mlgd/gpio"
 )
 
 var count = 0
 
 func handleConnection(c net.Conn) {
 
-        fmt.Print("New Connection")
+        fmt.Println("New Connection")
 
         for {
 
             netData, err := bufio.NewReader(c).ReadString('\n')
-            if err != nil {
-                    fmt.Println(err)
-                    return
+            if err != nil{
+
+                if err == io.EOF{
+
+					fmt.Println("Connection completed")
+					
+				}
+
+			fmt.Println(err)
+
+                break
+
             }
 
             temp := strings.TrimSpace(string(netData))
