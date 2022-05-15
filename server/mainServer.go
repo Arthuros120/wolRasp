@@ -118,9 +118,11 @@ func startComputer() error{
     // Go routine (thread parallèle) d’attente de fin du programme
     // pour l’extinction de la LED et la fermeture du port
     go func() {
+
         <-c
         pin.Clear()
         pin.Close()
+
     }()
     
     pin.Set()
