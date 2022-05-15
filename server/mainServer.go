@@ -40,12 +40,12 @@ func main() {
                 if strings.TrimSpace(string(netData)) == config.General.Password {
                         
 					fmt.Println("Request Accepted")
-					c.Write([]byte("$01"))    
+					c.Write([]byte("$01\n"))    
 
                 }else{
 
 					fmt.Println("Request Not Accepted")
-					c.Write([]byte("$02")) 
+					c.Write([]byte("$02\n")) 
 
 				}
         }
