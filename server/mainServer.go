@@ -39,12 +39,13 @@ func main() {
 
                 if strings.TrimSpace(string(netData)) == config.General.Password {
                         
-					fmt.Println("Start computer")
-					c.Write([]byte("Request Accepted"))    
+					fmt.Println("Request Accepted")
+					c.Write([]byte("$01"))    
 
                 }else{
 
-					c.Write([]byte("Request Not Accepted")) 
+					fmt.Println("Request Not Accepted")
+					c.Write([]byte("$02")) 
 
 				}
         }
