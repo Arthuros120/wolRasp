@@ -11,7 +11,6 @@ import (
 		"syscall"
 		"time"
 		"github.com/mlgd/gpio"
-		"strconv"
 )
 
 var count = 0
@@ -21,7 +20,7 @@ func handleConnection(c net.Conn) {
         fmt.Print("New Connection")
 
         for {
-			
+
             netData, err := bufio.NewReader(c).ReadString('\n')
             if err != nil {
                     fmt.Println(err)
