@@ -6,9 +6,12 @@ import (
         "net"
         "os"
         "strings"
+		"wolRasp/config"
 )
 
 func main() {
+
+		config.Get("clientConfig.json")
 	
         CONNECT := "92.128.78.135:31604"
 

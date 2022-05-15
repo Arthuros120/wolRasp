@@ -1,4 +1,5 @@
 package main
+/*
 
 import (
         "bufio"
@@ -46,5 +47,4 @@ func main() {
                 myTime := t.Format(time.RFC3339) + "\n"
                 c.Write([]byte(myTime))
         }
-}
-    
+}*/
