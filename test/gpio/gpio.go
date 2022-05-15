@@ -10,7 +10,7 @@ import (
     "github.com/mlgd/gpio"
 )
  
-func main() {
+func startComputer() {
     // Ouverture du port 23 en mode OUT
     pin, err := gpio.OpenPin(gpio.GPIO24, gpio.ModeOutput)
 

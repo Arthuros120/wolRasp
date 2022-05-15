@@ -1,10 +1,11 @@
 package main
 
 import (
-        "bufio"
-        "fmt"
-        "net"
-		"wolRasp/config"
+	"bufio"
+	"fmt"
+	"net"
+	"strings"
+	"wolRasp/config"
 )
 
 func main() {
@@ -27,5 +28,28 @@ func main() {
 
         message, _ := bufio.NewReader(c).ReadString('\n')
 
-        fmt.Print("->: " + message)
+        if strings.TrimSpace(string(message)) == "$01" {
+                        
+            fmt.Println("Request Accepted")
+            
+            message, _ = bufio.NewReader(c).ReadString('\n')
+
+            if strings.TrimSpace(string(message)) == "$01" {
+
+                fmt.Println("Successful computer boot sequence")
+
+            }else{
+
+                fmt.Println("Unsuccessful computer boot sequence")
+
+                return
+
+            }
+
+        }else{
+
+            fmt.Println("Request Not Accepted")
+            return
+
+        }
 }
