@@ -7,6 +7,9 @@ type Config struct {
 
 	Password	string
 
+	PrivateKey  string
+	PublicKey   string
+
 }
 
 var General Config

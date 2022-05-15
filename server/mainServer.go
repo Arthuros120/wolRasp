@@ -69,7 +69,7 @@ func handleConnection(c net.Conn) {
 
 func main() {
         
-		config.Get("serverConfig.json")
+		config.Get("/home/arks/code/wolRasp/serverConfig.json")
 
         PORT := ":" + config.General.Port
 
