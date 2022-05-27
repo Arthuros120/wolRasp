@@ -11,15 +11,36 @@ import (
 	"syscall"
 	"time"
 	"wolRasp/config"
-
 	"github.com/mlgd/gpio"
+    "log"
+    "crypto/rand"
+    "crypto/rsa"
+    "crypto/x509"
+    "encoding/pem"
+    "errors"
 )
+
+// Décrypter
+func RsaDecrypt(privateKey []byte, ciphertext []byte) ([]byte, error) {
+    //Décrypter
+    block, _ := pem.Decode(privateKey)
+    if block == nil {
+        return nil, errors.New("private key error!")
+    }
+    //AnalysePKCS1Format de la clé privée
+    priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+    if err != nil {
+        return nil, err
+    }
+    // Décrypter
+    return rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
+}
 
 var count = 0
 
 func handleConnection(c net.Conn) {
 
-        fmt.Println("New Connection")
+        log.Println("New Connection")
 
         for {
 
@@ -28,11 +49,11 @@ func handleConnection(c net.Conn) {
 
                 if err == io.EOF{
 
-					fmt.Println("Connection completed")
+					log.Println("Connection completed")
 					
 				}
 
-			fmt.Println(err)
+			log.Println(err)
 
                 break
 
@@ -40,9 +61,11 @@ func handleConnection(c net.Conn) {
 
             temp := strings.TrimSpace(string(netData))
 
-			if temp == config.General.Password {
+            res, _ := RsaDecrypt([]byte(config.General.PrivateKey), []byte(temp)) 
 
-				fmt.Println("Request Accepted")
+			if string(res) == config.General.Password {
+
+				log.Println("Request Accepted")
 				c.Write([]byte("$01\n"))
 
 				if startComputer() == nil{
@@ -57,7 +80,7 @@ func handleConnection(c net.Conn) {
 
             }else{
 
-				fmt.Println("Request Not Accepted")
+				log.Println("Request Not Accepted")
 				c.Write([]byte("$02\n")) 
 
 			}
@@ -67,43 +90,13 @@ func handleConnection(c net.Conn) {
 
 }
 
-func main() {
-        
-		config.Get("/home/arks/code/wolRasp/serverConfig.json")
-
-        PORT := ":" + config.General.Port
-
-		fmt.Println("Start server to *" + PORT)
-
-        l, err := net.Listen("tcp4", PORT)
-        if err != nil {
-                fmt.Println(err)
-                return
-        }
-        defer l.Close()
-
-        for {
-
-                c, err := l.Accept()
-                if err != nil {
-                        fmt.Println(err)
-                        return
-                }
-
-                go handleConnection(c)
-
-                count++
-
-        }
-}
-
 func startComputer() error{
     // Ouverture du port 23 en mode OUT
     pin, err := gpio.OpenPin(gpio.GPIO24, gpio.ModeOutput)
 
     if err != nil {
 
-        fmt.Printf("Error opening pin! %s\n", err)
+        log.Printf("Error opening pin! %s\n", err)
         return err
 
     }
@@ -132,4 +125,34 @@ func startComputer() error{
     pin.Clear()
 
 	return nil
+}
+
+func main() {
+        
+    config.Get("/home/arks/code/wolRasp/serverConfig.json")
+
+    PORT := ":" + config.General.Port
+
+    log.Println("Start server to *" + PORT)
+
+    l, err := net.Listen("tcp4", PORT)
+    if err != nil {
+            fmt.Println(err)
+            return
+    }
+    defer l.Close()
+
+    for {
+
+            c, err := l.Accept()
+            if err != nil {
+                    log.Println(err)
+                    return
+            }
+
+            go handleConnection(c)
+
+            count++
+
+    }
 }

@@ -6,7 +6,32 @@ import (
 	"net"
 	"strings"
 	"wolRasp/config"
+    "log"
+    "crypto/rand"
+    "crypto/rsa"
+    "crypto/x509"
+    "encoding/base64"
+    "encoding/pem"
+    "errors"
 )
+
+// Cryptage
+func RsaEncrypt(publicKey []byte, origData []byte) ([]byte, error) {
+    //Décrypterpem Format de la clé publique 
+    block, _ := pem.Decode(publicKey)
+    if block == nil {
+        return nil, errors.New("public key error")
+    }
+    //  Résoudre la clé publique 
+    pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
+    if err != nil {
+        return nil, err
+    }
+    // Assertion de type
+    pub := pubInterface.(*rsa.PublicKey)
+    //Cryptage
+    return rsa.EncryptPKCS1v15(rand.Reader, pub, origData)
+}
 
 func main() {
 
@@ -14,33 +39,41 @@ func main() {
 	
         CONNECT := config.General.Address + ":" + config.General.Port
 
-		fmt.Println("Attempt to connect to " + CONNECT)
+		log.Println("Attempt to connect to " + CONNECT)
 
         c, err := net.Dial("tcp", CONNECT)
         if err != nil {
-                fmt.Println(err)
+                log.Println(err)
                 return
         }
 
-		fmt.Println("Connected to server : " + CONNECT + "\nSend signal...")
+		log.Println("Connected to server : " + CONNECT)
 
-        fmt.Fprintf(c, config.General.Password + "\n")
+        log.Println("Send signal...")
+
+        msgEncode, _ := RsaEncrypt([]byte(config.General.PublicKey), []byte(config.General.Password))
+
+        msgEncodeStr := base64.StdEncoding.EncodeToString(msgEncode)
+
+        log.Println(msgEncodeStr)
+
+        fmt.Fprintf(c, msgEncodeStr + "\n")
 
         message, _ := bufio.NewReader(c).ReadString('\n')
 
         if strings.TrimSpace(string(message)) == "$01" {
                         
-            fmt.Println("Request Accepted")
+            log.Println("Request Accepted")
             
             message, _ = bufio.NewReader(c).ReadString('\n')
 
             if strings.TrimSpace(string(message)) == "$01" {
 
-                fmt.Println("Successful computer boot sequence")
+                log.Println("Successful computer boot sequence")
 
             }else{
 
-                fmt.Println("Unsuccessful computer boot sequence")
+                log.Println("Unsuccessful computer boot sequence")
 
                 return
 
@@ -48,7 +81,7 @@ func main() {
 
         }else{
 
-            fmt.Println("Request Not Accepted")
+            log.Println("Request Not Accepted")
             return
 
         }
