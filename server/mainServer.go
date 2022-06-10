@@ -77,7 +77,7 @@ func handleConnection(c net.Conn) {
 
             privateKey := []byte(read(config.General.PrivateKey))
 
-            res, _ := RsaDecrypt([]byte(config.General.PrivateKey), []byte(temp))
+            res, _ := RsaDecrypt(privateKey, []byte(temp))
 
             log.Println(string(res))
 
