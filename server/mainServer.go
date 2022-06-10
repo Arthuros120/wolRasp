@@ -61,7 +61,11 @@ func handleConnection(c net.Conn) {
 
             temp := strings.TrimSpace(string(netData))
 
-            res, _ := RsaDecrypt([]byte(config.General.PrivateKey), []byte(temp)) 
+            log.Println(string(temp ))
+
+            res, _ := RsaDecrypt([]byte(config.General.PrivateKey), []byte(temp))
+
+            log.Println(string(res))
 
 			if string(res) == config.General.Password {
 
