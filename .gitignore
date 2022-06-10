@@ -20,10 +20,8 @@
 
 bin/
 log/
-<<<<<<< HEAD
-=======
 key/
->>>>>>> 71d3bf983fceee21866b6ed4cca46318f4f50c1a
+
 
 ### Executable ###
 *.app
