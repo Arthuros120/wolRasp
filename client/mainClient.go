@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+    "encoding/base64"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -68,7 +69,7 @@ func main() {
 
         msgEncode, _ := RsaEncrypt(publicKey, []byte(config.General.Password))
 
-        msgEncodeStr := fmt.Sprint(msgEncode)
+        msgEncodeStr := base64.StdEncoding.EncodeToString(msgEncode)
 
         fmt.Fprintf(c, msgEncodeStr + "\n")
 

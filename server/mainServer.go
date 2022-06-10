@@ -78,19 +78,11 @@ func handleConnection(c net.Conn) {
 
             log.Println(temp)
 
+            log.Println([]byte(temp))
+
             privateKey := []byte(read(config.General.PrivateKey))
 
-            numbers := strings.Split(temp, "[")
-
-            numbers = strings.Split(numbers[1], "]")
-
-            numbers = strings.Split(numbers[0], " ")
-
-            analyse := []byte(temp)
-
-            log.Println(analyse)
-
-            res, err := RsaDecrypt(privateKey, analyse)
+            res, err := RsaDecrypt(privateKey, []byte(temp))
 
             log.Println(err)
 
