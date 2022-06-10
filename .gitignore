@@ -19,6 +19,8 @@
 *json
 
 bin/
+log/
+key/
 
 ### Executable ###
 *.app

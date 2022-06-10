@@ -13,6 +13,7 @@ import (
     "encoding/base64"
     "encoding/pem"
     "errors"
+    "io/ioutil"
 )
 
 // Cryptage
@@ -33,6 +34,19 @@ func RsaEncrypt(publicKey []byte, origData []byte) ([]byte, error) {
     return rsa.EncryptPKCS1v15(rand.Reader, pub, origData)
 }
 
+func read(path string) string {
+
+    file, err := ioutil.ReadFile(path)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    return string(file)
+    
+
+}
+
 func main() {
 
 		config.Get("clientConfig.json")
@@ -51,7 +65,11 @@ func main() {
 
         log.Println("Send signal...")
 
-        msgEncode, _ := RsaEncrypt([]byte(config.General.PublicKey), []byte(config.General.Password))
+        publicKey := []byte(read(config.General.PublicKey))
+
+        msgEncode, err := RsaEncrypt(publicKey, []byte(config.General.Password))
+
+        log.Println(msgEncode)
 
         msgEncodeStr := base64.StdEncoding.EncodeToString(msgEncode)
 
