@@ -80,7 +80,7 @@ func main() {
 
 	config.Get("serverConfig.json")
 
-    data, _ := RsaEncrypt(publicKey, []byte("hello world"))
+    data, _ := RsaEncrypt(publicKey, []byte("JeDemandeAuNuageDeDecoller15052022$"))
 
     log.Println(base64.StdEncoding.EncodeToString(data))
 
