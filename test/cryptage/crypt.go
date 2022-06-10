@@ -9,6 +9,7 @@ import (
     "errors"
     "log"
 	"wolRasp/config"
+    "io/ioutil"
 )
 
 // Génération de clés privées
@@ -41,6 +42,19 @@ nCDPPZ7oV7p1B9Pud+6zPacoqDz2M24vHFWYY2FbIIJh8fHhKcfXNXOLovdVBE7Z
 y682X1+R1lRK8D+vmQIDAQAB
 -----END PUBLIC KEY-----
 `)
+
+func read(path string) string {
+
+    file, err := ioutil.ReadFile(path)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    return string(file)
+    
+
+}
 
 // Cryptage
 func RsaEncrypt(publicKey []byte, origData []byte) ([]byte, error) {
@@ -80,11 +94,15 @@ func main() {
 
 	config.Get("serverConfig.json")
 
-    data, _ := RsaEncrypt(publicKey, []byte("JeDemandeAuNuageDeDecoller15052022$"))
+    publicKeyConf := []byte(read(config.General.PublicKey))
+
+    data, _ := RsaEncrypt(publicKeyConf, []byte(config.General.Password))
 
     log.Println(base64.StdEncoding.EncodeToString(data))
 
-    origData, _ := RsaDecrypt(privateKey, data)
+    privateKeyConf := []byte(read(config.General.PrivateKey))
+
+    origData, _ := RsaDecrypt(privateKeyConf, data)
 
     log.Println(string(origData))
 

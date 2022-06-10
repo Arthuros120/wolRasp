@@ -19,6 +19,7 @@ import (
     "encoding/pem"
     "errors"
     "io/ioutil"
+    "encoding/base64"
 )
 
 // Décrypter
@@ -79,11 +80,17 @@ func handleConnection(c net.Conn) {
 
             privateKey := []byte(read(config.General.PrivateKey))
 
-            res, _ := RsaDecrypt(privateKey, []byte(temp))
+            log.Println([]byte(temp))
 
-            log.Println(string(res))
+            res, err := RsaDecrypt(privateKey, []byte(temp))
 
-			if string(res) == config.General.Password {
+            log.Println(err)
+
+            msgDecodeStr := base64.StdEncoding.EncodeToString(res)
+
+            log.Println(msgDecodeStr)
+
+			if msgDecodeStr == config.General.Password {
 
 				log.Println("Request Accepted")
 				c.Write([]byte("$01\n"))
@@ -156,7 +163,7 @@ func main() {
     log.Println("Start server to *" + PORT)
 
     l, err := net.Listen("tcp4", PORT)
-    
+
     if err != nil {
             fmt.Println(err)
             return
