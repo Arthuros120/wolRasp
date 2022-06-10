@@ -75,6 +75,8 @@ func handleConnection(c net.Conn) {
 
             temp := strings.TrimSpace(string(netData))
 
+            log.Println(temp)
+
             privateKey := []byte(read(config.General.PrivateKey))
 
             res, _ := RsaDecrypt(privateKey, []byte(temp))
@@ -154,6 +156,7 @@ func main() {
     log.Println("Start server to *" + PORT)
 
     l, err := net.Listen("tcp4", PORT)
+    
     if err != nil {
             fmt.Println(err)
             return

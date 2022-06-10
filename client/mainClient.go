@@ -67,10 +67,8 @@ func main() {
 
         publicKey := []byte(read(config.General.PublicKey))
 
-        msgEncode, err := RsaEncrypt(publicKey, []byte(config.General.Password))
-
-        log.Println(msgEncode)
-
+        msgEncode, _ := RsaEncrypt(publicKey, []byte(config.General.Password))
+    
         msgEncodeStr := base64.StdEncoding.EncodeToString(msgEncode)
 
         log.Println(msgEncodeStr)
