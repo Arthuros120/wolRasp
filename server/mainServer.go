@@ -85,7 +85,7 @@ func handleConnection(c net.Conn) {
 
             number := strings.Split(temp, "[")
 
-            log.Println(number)
+            log.Println(number[1])
 
             number = strings.Split(number[1], "]")
 
