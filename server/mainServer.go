@@ -19,6 +19,8 @@ import (
 	"syscall"
 	"time"
 	"wolRasp/config"
+
+	"github.com/mlgd/gpio"
 )
 
 // Décrypter
