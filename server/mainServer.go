@@ -2,8 +2,16 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -11,15 +19,9 @@ import (
 	"syscall"
 	"time"
 	"wolRasp/config"
+
 	"github.com/mlgd/gpio"
-    "log"
-    "crypto/rand"
-    "crypto/rsa"
-    "crypto/x509"
-    "encoding/pem"
-    "errors"
-    "io/ioutil"
-    "encoding/base64"
+	"golang.org/x/tools/godoc/analysis"
 )
 
 // Décrypter
@@ -80,9 +82,17 @@ func handleConnection(c net.Conn) {
 
             privateKey := []byte(read(config.General.PrivateKey))
 
-            log.Println([]byte(temp))
+            analyse := make([]byte, 0, 0)
 
-            res, err := RsaDecrypt(privateKey, []byte(temp))
+            number := strings.Split(temp, "[")
+
+            number = strings.Split(number[1], "]")
+
+            number = strings.Split(number[0], " ")
+
+            log.Println(number)
+
+            res, err := RsaDecrypt(privateKey, analyse)
 
             log.Println(err)
 

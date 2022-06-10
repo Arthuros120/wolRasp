@@ -2,18 +2,17 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"strings"
 	"wolRasp/config"
-    "log"
-    "crypto/rand"
-    "crypto/rsa"
-    "crypto/x509"
-    "encoding/base64"
-    "encoding/pem"
-    "errors"
-    "io/ioutil"
 )
 
 // Cryptage
@@ -69,11 +68,7 @@ func main() {
 
         msgEncode, _ := RsaEncrypt(publicKey, []byte(config.General.Password))
 
-        log.Println(msgEncode)
-    
-        msgEncodeStr := base64.StdEncoding.EncodeToString(msgEncode)
-
-        log.Println(msgEncodeStr)
+        msgEncodeStr := fmt.Sprint(msgEncode)
 
         fmt.Fprintf(c, msgEncodeStr + "\n")
 
