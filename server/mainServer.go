@@ -19,8 +19,7 @@ import (
 	"syscall"
 	"time"
 	"wolRasp/config"
-
-	"github.com/mlgd/gpio"
+    "github.com/mlgd/gpio"
 )
 
 // Décrypter
@@ -81,15 +80,15 @@ func handleConnection(c net.Conn) {
 
             privateKey := []byte(read(config.General.PrivateKey))
 
-            analyse := make([]byte, 0, 0)
-
             numbers := strings.Split(temp, "[")
 
             numbers = strings.Split(numbers[1], "]")
 
             numbers = strings.Split(numbers[0], " ")
 
-            log.Println(len(numbers))
+            analyse := []byte(temp)
+
+            log.Println(analyse)
 
             res, err := RsaDecrypt(privateKey, analyse)
 
