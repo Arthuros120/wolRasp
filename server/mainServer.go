@@ -89,11 +89,7 @@ func handleConnection(c net.Conn) {
 
             numbers = strings.Split(numbers[0], " ")
 
-            for _, number := range numbers {
-                
-                log.Println(number)
-
-            }
+            log.Println(len(numbers))
 
             res, err := RsaDecrypt(privateKey, analyse)
 
