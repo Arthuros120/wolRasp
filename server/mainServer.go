@@ -19,9 +19,6 @@ import (
 	"syscall"
 	"time"
 	"wolRasp/config"
-
-	"github.com/mlgd/gpio"
-	"golang.org/x/tools/godoc/analysis"
 )
 
 // Décrypter
