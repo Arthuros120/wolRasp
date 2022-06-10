@@ -2,15 +2,8 @@ package main
 
 import (
 	"bufio"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/base64"
-	"encoding/pem"
-	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -22,35 +15,6 @@ import (
     "github.com/mlgd/gpio"
 )
 
-// Décrypter
-func RsaDecrypt(privateKey []byte, ciphertext []byte) ([]byte, error) {
-    //Décrypter
-    block, _ := pem.Decode(privateKey)
-    if block == nil {
-        return nil, errors.New("private key error!")
-    }
-    //AnalysePKCS1Format de la clé privée
-    priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-    if err != nil {
-        return nil, err
-    }
-    // Décrypter
-    return rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
-}
-
-func read(path string) string {
-
-    file, err := ioutil.ReadFile(path)
-
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    return string(file)
-    
-
-}
-
 var count = 0
 
 func handleConnection(c net.Conn) {
@@ -60,6 +24,7 @@ func handleConnection(c net.Conn) {
         for {
 
             netData, err := bufio.NewReader(c).ReadString('\n')
+
             if err != nil{
 
                 if err == io.EOF{
@@ -76,23 +41,10 @@ func handleConnection(c net.Conn) {
 
             temp := strings.TrimSpace(string(netData))
 
-            log.Println(temp)
-
-            log.Println([]byte(temp))
-
-            privateKey := []byte(read(config.General.PrivateKey))
-
-            res, err := RsaDecrypt(privateKey, []byte(temp))
-
-            log.Println(err)
-
-            msgDecodeStr := base64.StdEncoding.EncodeToString(res)
-
-            log.Println(msgDecodeStr)
-
-			if msgDecodeStr == config.General.Password {
+			if temp == config.General.Password {
 
 				log.Println("Request Accepted")
+
 				c.Write([]byte("$01\n"))
 
 				if startComputer() == nil{
@@ -108,6 +60,7 @@ func handleConnection(c net.Conn) {
             }else{
 
 				log.Println("Request Not Accepted")
+
 				c.Write([]byte("$02\n")) 
 
 			}
@@ -152,10 +105,11 @@ func startComputer() error{
     pin.Clear()
 
 	return nil
+
 }
 
 func main() {
-        
+
     config.Get("/home/arks/code/wolRasp/serverConfig.json")
 
     PORT := ":" + config.General.Port
@@ -165,22 +119,28 @@ func main() {
     l, err := net.Listen("tcp4", PORT)
 
     if err != nil {
+
             fmt.Println(err)
             return
+
     }
+
     defer l.Close()
 
-    for {
+    for{
 
-            c, err := l.Accept()
-            if err != nil {
-                    log.Println(err)
-                    return
-            }
+        c, err := l.Accept()
 
-            go handleConnection(c)
+        if err != nil {
 
-            count++
+            log.Println(err)
+            return
+
+        }
+
+        go handleConnection(c)
+
+        count++
 
     }
 }
