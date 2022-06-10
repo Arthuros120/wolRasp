@@ -18,6 +18,7 @@ import (
     "crypto/x509"
     "encoding/pem"
     "errors"
+    "io/ioutil"
 )
 
 // Décrypter
@@ -34,6 +35,19 @@ func RsaDecrypt(privateKey []byte, ciphertext []byte) ([]byte, error) {
     }
     // Décrypter
     return rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
+}
+
+func read(path string) string {
+
+    file, err := ioutil.ReadFile(path)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    return string(file)
+    
+
 }
 
 var count = 0
@@ -61,7 +75,7 @@ func handleConnection(c net.Conn) {
 
             temp := strings.TrimSpace(string(netData))
 
-            log.Println(string(temp ))
+            privateKey := []byte(read(config.General.PrivateKey))
 
             res, _ := RsaDecrypt([]byte(config.General.PrivateKey), []byte(temp))
 
